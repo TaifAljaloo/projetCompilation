@@ -43,6 +43,8 @@
 %token R_CUR_BRK
 %token L_SQ_BRK
 %token R_SQ_BRK
+%token START_DECL
+%token END_DECL
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL

@@ -12,34 +12,34 @@ rule token = parse
     | "/*"              {commentary lexbuf}
     | [' ' '\t' '\r']   {token lexbuf}
     | '\n'              { Lexing.new_line lexbuf ; token lexbuf }
-    | "int"             { Type_int }
-    | "float"           { Type_float }
-    | "bool"            { Type_bool }
-    | "Pos"             { Type_pos }
-    | "Color"           { Type_color }
-    | "Point"           { Type_point }
-    | "List"            { Type_list }
-    | "+"               { Add }
-    | "-"               { Sub }
-    | "*"               { Mul }
-    | "/"               { Div }
-    | "%"               { Mod }
-    | "And"             { And }
-    | "Or"              { Or }
-    | "="               { Eq }
-    | "<>"              { Ne }
-    | "<"               { Lt }
-    | ">"               { Gt }
-    | "<="              { Le }
-    | ">="              { Ge }
-    | "-"               { Usub }
-    | "Not"             { Not }
-    | "Head"            { Head }
-    | "Tail"            { Tail }
-    | "Floor"           { Floor }
-    | "Float_of_int"    { Float_of_int }
-    | "Cos"             { Cos }
-    | "Sin"             { Sin }
+    | "Int"             { INT }
+    | "Float"           { FLOAT }
+    | "Bool"            { BOOL }
+    | "Pos"             { POS }
+    | "Color"           { COLOR }
+    | "Point"           { POINT }
+    | "List"            { LIST }
+    | "+"               { ADD }
+    | "-"               { SUB }
+    | "*"               { MUL }
+    | "/"               { DIV }
+    | "%"               { MOD }
+    | "And"             { AND }
+    | "Or"              { OR }
+    | "="               { EQ }
+    | "<>"              { NE }
+    | "<"               { LT }
+    | ">"               { GT }
+    | "<="              { LE }
+    | ">="              { GE }
+    | "-"               { USUB }
+    | "Not"             { NOT }
+    | "Head"            { HEAD }
+    | "Tail"            { TAIL }
+    | "Floor"           { FLOOR }
+    | "Float_of_int"    { FLOAT_OF_INT }
+    | "Cos"             { COS }
+    | "Sin"             { SIN }
     | ";"               { SEMICOLON }
     | ","               { COMMA }
     | "("               { L_PAR }
@@ -48,6 +48,8 @@ rule token = parse
     | "}"               { R_CUR_BRK }
     | "["               { L_SQ_BRK }
     | "]"               { R_SQ_BRK }
+    | "<"               { START_DECL }
+    | ">"               { END_DECL }
     | "\"" ([^ '\"']* as s) "\""  { STRING(s) }
     | (digit)* "." (digit)* as s {FLOAT(try float_of_string s with Failure _ -> raise (Error(s)) )}
     | (digit)+ as s     { INT(try int_of_string s with Failure _ ->(let pos = Lexing.lexeme_start_p lexbuf in raise (Error(Format.sprintf "Line %d, char %d ,Read: '%s'. It is not a valid integer" pos.pos_lnum (pos.pos_cnum - pos.pos_bol +1) s)) ))}
