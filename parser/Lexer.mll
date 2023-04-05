@@ -12,13 +12,13 @@ rule token = parse
     | "/*"              {commentary lexbuf}
     | [' ' '\t' '\r']   {token lexbuf}
     | '\n'              { Lexing.new_line lexbuf ; token lexbuf }
-    | "Int"             { INT }
-    | "Float"           { FLOAT }
-    | "Bool"            { BOOL }
-    | "Pos"             { POS }
-    | "Color"           { COLOR }
-    | "Point"           { POINT }
-    | "List"            { LIST }
+    | "Int"             { TYPE_INT }
+    | "Float"           { TYPE_FLOAT }
+    | "Bool"            { TYPE_BOOL }
+    | "Pos"             { TYPE_POS }
+    | "Color"           { TYPE_COLOR }
+    | "Point"           { TYPE_POINT }
+    | "List"            { TYPE_LIST }
     | "+"               { ADD }
     | "-"               { SUB }
     | "*"               { MUL }
@@ -48,8 +48,6 @@ rule token = parse
     | "}"               { R_CUR_BRK }
     | "["               { L_SQ_BRK }
     | "]"               { R_SQ_BRK }
-    | "<"               { START_DECL }
-    | ">"               { END_DECL }
     | "\"" ([^ '\"']* as s) "\""  { STRING(s) }
     | (digit)* "." (digit)* as s {FLOAT(try float_of_string s with Failure _ -> raise (Error(s)) )}
     | (digit)+ as s     { INT(try int_of_string s with Failure _ ->(let pos = Lexing.lexeme_start_p lexbuf in raise (Error(Format.sprintf "Line %d, char %d ,Read: '%s'. It is not a valid integer" pos.pos_lnum (pos.pos_cnum - pos.pos_bol +1) s)) ))}

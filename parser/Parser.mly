@@ -7,34 +7,35 @@
 
 
 %token EOF
-%token Type_int
-%token Type_float
-%token Type_bool
-%token Type_pos
-%token Type_color
-%token Type_point
-%token Type_list
-%token Add
-%token Sub
-%token Mul
-%token Div
-%token Mod
-%token And
-%token Or
-%token Eq
-%token Ne
-%token Lt
-%token Gt
-%token Le
-%token Ge
-%token Usub
-%token Not
+%token TYPE_INT
+%token TYPE_FLOAT
+%token TYPE_BOOL
+%token TYPE_POS
+%token TYPE_COLOR
+%token TYPE_POINT
+%token TYPE_LIST
+%token ADD
+%token SUB
+%token MUL
+%token DIV
+%token MOD
+%token AND
+%token OR
+%token EQ
+%token NE
+%token LT
+%token GT
+%token LE
+%token GE
+%token USUB
+%token NOT
 %token Head
-%token Tail
-%token Floor
-%token Float_of_int
-%token Cos
-%token Sin
+%token TAIL
+%token FLOOR
+%token HEAD
+%token FLOAT_OF_INT
+%token COS
+%token SIN
 %token SEMICOLON
 %token COMMA
 %token L_PAR
@@ -43,14 +44,11 @@
 %token R_CUR_BRK
 %token L_SQ_BRK
 %token R_SQ_BRK
-%token START_DECL
-%token END_DECL
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
-%token <string> STRING
 %token <string> ID
-
+%token <string> STRING
 %left AND OR
 %left EQ NEQ LT GT LEQ GEQ
 %left ADD SUB
@@ -64,11 +62,39 @@
 main:
 | EOF { Program([],Block([],Annotation.create $loc)) }
 
+
+expression:
+| i=INT { Int(i,Annotation.create $loc) }
+| f=FLOAT { Float(f,Annotation.create $loc) }
+| b=BOOL { Bool(b,Annotation.create $loc) }
+| s=STRING { String(s,Annotation.create $loc) }
+| id=ID { Var(id,Annotation.create $loc) }
+| e1 = expression op = binop e2 = expression { Binop(op,e1,e2,Annotation.create $loc) }
+| op = unop e = expression { Unop(op,e,Annotation.create $loc) }
+
 types:
-| Type_int { Int }
-| Type_float { Float }
-| Type_bool { Bool }
-| Type_pos { Pos }
-| Type_color { Color }
-| Type_point { Point }
-| Type_list { List }
+| INT {Type_int} 
+| FLOAT{Type_float} 
+| BOOL {Type_bool }
+
+
+%inline binop:
+| ADD   { Add }
+| SUB   { Sub }
+| MUL   { Mul }
+| DIV   { Div }
+| MOD   { Mod }
+| AND   { And }
+| OR  { Or }
+| EQ    { Eq }
+| LT   { Lt }
+| GT    { Gt }
+
+%inline unop:
+| USUB  { Usub }
+| NOT  { Not }
+| TAIL  { Tail }
+| FLOOR { Floor }
+| FLOAT_OF_INT { Float_of_int }
+| COS   { Cos }
+| SIN   { Sin }
