@@ -1,6 +1,8 @@
 <
 List(Int)(l);
-Int(length)
+Int(length);
+Color(t);
+Pos(ea)
 >
 Begin
     Int(x);

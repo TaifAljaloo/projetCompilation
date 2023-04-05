@@ -61,21 +61,38 @@
 
 main:
 | EOF { Program([],Block([],Annotation.create $loc)) }
+| LT a = argument_list GT e = expression EOF {Program(a,Block([],Annotation.create $loc))}
+| e = expression EOF { Program([],Block([e],Annotation.create $loc)) }
 
 
 expression:
-| i=INT { Int(i,Annotation.create $loc) }
-| f=FLOAT { Float(f,Annotation.create $loc) }
-| b=BOOL { Bool(b,Annotation.create $loc) }
+| {Nop}
+/*
+| i=INT { Constant_i(i,Annotation.create $loc) }
+| f=FLOAT { Constant_f(f,Annotation.create $loc) }
+| b=BOOL { Constant_b(b,Annotation.create $loc) }
 | s=STRING { String(s,Annotation.create $loc) }
-| id=ID { Var(id,Annotation.create $loc) }
-| e1 = expression op = binop e2 = expression { Binop(op,e1,e2,Annotation.create $loc) }
-| op = unop e = expression { Unop(op,e,Annotation.create $loc) }
+| id=ID { Variable(id,Annotation.create $loc) }
 
+| e1 = expression op = binop e2 = expression { Binary_operator(op,e1,e2,Annotation.create $loc) }
+| op = unop e = expression { Unary_operator(op,e,Annotation.create $loc) }
+*/
 types:
-| INT {Type_int} 
-| FLOAT{Type_float} 
-| BOOL {Type_bool }
+| TYPE_INT {Type_int} 
+| TYPE_FLOAT{Type_float} 
+| TYPE_BOOL {Type_bool }
+| TYPE_POS {Type_pos}
+| TYPE_COLOR {Type_color}
+| TYPE_POINT {Type_point}
+
+argument_list:
+| t = argument_list SEMICOLON arg = argument {arg :: t}
+| arg = argument {arg :: []}
+| {[]}
+
+argument:
+| t = types L_PAR name = ID R_PAR {Argument(name, t,Annotation.create $loc)}
+| TYPE_LIST L_PAR t = types R_PAR L_PAR name = ID R_PAR {Argument(name, Type_list(t), Annotation.create $loc)}
 
 
 %inline binop:
@@ -91,7 +108,7 @@ types:
 | GT    { Gt }
 
 %inline unop:
-| USUB  { Usub }
+| USUB  { USub }
 | NOT  { Not }
 | TAIL  { Tail }
 | FLOOR { Floor }
