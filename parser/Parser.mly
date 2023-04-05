@@ -46,6 +46,8 @@
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
+%token <string> STRING
+%token <string> ID
 
 %left AND OR
 %left EQ NEQ LT GT LEQ GEQ
