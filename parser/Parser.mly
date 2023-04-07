@@ -49,6 +49,17 @@
 %token <bool> BOOL
 %token <string> ID
 %token <string> STRING
+%token BEGIN
+%token END
+%token NOP
+%token DRAW
+%token FOREACH
+%token IN
+%token COPY
+%token FOR
+%token FROM
+%token TO
+%token STEP
 %left AND OR
 %left EQ NEQ LT GT LEQ GEQ
 %left ADD SUB
@@ -61,22 +72,23 @@
 
 main:
 | EOF { Program([],Block([],Annotation.create $loc)) }
-| LT a = argument_list GT e = expression EOF {Program(a,Block([],Annotation.create $loc))}
-| e = expression EOF { Program([],Block([e],Annotation.create $loc)) }
-
+| LT a = argument_list GT e = statement EOF {Program(a,e)}
+| e = statement EOF { Program([],e) }
 
 expression:
-| {Nop}
-/*
 | i=INT { Constant_i(i,Annotation.create $loc) }
 | f=FLOAT { Constant_f(f,Annotation.create $loc) }
 | b=BOOL { Constant_b(b,Annotation.create $loc) }
-| s=STRING { String(s,Annotation.create $loc) }
-| id=ID { Variable(id,Annotation.create $loc) }
-
+| TYPE_POS L_PAR x = expression COMMA y = expression R_PAR {Pos(x,y,Annotation.create $loc)}
+| TYPE_COLOR L_PAR r = expression COMMA g = expression COMMA b = expression R_PAR {Color(r,g,b,Annotation.create $loc)}
+| TYPE_POINT L_PAR pos = expression COMMA color = expression R_PAR {Point(pos, color, Annotation.create $loc)}
+| id = ID {Variable(id, Annotation.create $loc)}
 | e1 = expression op = binop e2 = expression { Binary_operator(op,e1,e2,Annotation.create $loc) }
 | op = unop e = expression { Unary_operator(op,e,Annotation.create $loc) }
-*/
+//Field eccessor??
+| L_SQ_BRK el = expression_list R_SQ_BRK {List(el, Annotation.create $loc)}
+//Cons?
+
 types:
 | TYPE_INT {Type_int} 
 | TYPE_FLOAT{Type_float} 
@@ -85,15 +97,37 @@ types:
 | TYPE_COLOR {Type_color}
 | TYPE_POINT {Type_point}
 
-argument_list:
-| t = argument_list SEMICOLON arg = argument {arg :: t}
-| arg = argument {arg :: []}
-| {[]}
+statement:
+| BEGIN s = statement_list END {Block(s, Annotation.create $loc)}
+| COPY L_PAR e1 = expression COMMA e2 = expression R_PAR {Assignment(e1, e2, Annotation.create $loc)} // Assignment
+| t = types L_PAR id = ID R_PAR {Variable_declaration(id, t, Annotation.create $loc)} // VarDecl
+| BEGIN s = statement_list END {Block(s, Annotation.create $loc)} // Block
+//| //IfThenElse
+| FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement SEMICOLON {For(id, init, target, step, body, Annotation.create $loc)}//For
+| FOREACH id = ID IN e = expression s = statement {Foreach(id, e, s, Annotation.create $loc)} //For each
+| DRAW L_PAR e = expression R_PAR {Draw(e, Annotation.create $loc)} //Draw
+| NOP {Nop} //Nop
+//| //Print
 
 argument:
 | t = types L_PAR name = ID R_PAR {Argument(name, t,Annotation.create $loc)}
 | TYPE_LIST L_PAR t = types R_PAR L_PAR name = ID R_PAR {Argument(name, Type_list(t), Annotation.create $loc)}
 
+
+argument_list:
+| t = argument_list SEMICOLON arg = argument {arg :: t}
+| arg = argument {arg :: []}
+| {[]}
+
+statement_list:
+| t = statement_list SEMICOLON st = statement {st::t}
+| st = statement {st::[]}
+| {[]}
+
+expression_list:
+| t = expression_list COMMA e = expression {e :: t}
+| e = expression {e::[]}
+| {[]}
 
 %inline binop:
 | ADD   { Add }

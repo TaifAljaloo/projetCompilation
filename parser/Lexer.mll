@@ -48,6 +48,17 @@ rule token = parse
     | "}"               { R_CUR_BRK }
     | "["               { L_SQ_BRK }
     | "]"               { R_SQ_BRK }
+    | "Begin"           { BEGIN }
+    | "End"             { END }
+    | "Nop"             { NOP }
+    | "Draw"            { DRAW }
+    | "Foreach"         { FOREACH }
+    | "In"              { IN }
+    | "Copy"            { COPY }
+    | "For"             { FOR }
+    | "From"            { FROM }
+    | "To"              { TO }
+    | "Step"            { STEP }
     | "\"" ([^ '\"']* as s) "\""  { STRING(s) }
     | (digit)* "." (digit)* as s {FLOAT(try float_of_string s with Failure _ -> raise (Error(s)) )}
     | (digit)+ as s     { INT(try int_of_string s with Failure _ ->(let pos = Lexing.lexeme_start_p lexbuf in raise (Error(Format.sprintf "Line %d, char %d ,Read: '%s'. It is not a valid integer" pos.pos_lnum (pos.pos_cnum - pos.pos_bol +1) s)) ))}
