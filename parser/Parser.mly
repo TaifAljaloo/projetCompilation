@@ -64,6 +64,13 @@
 %token STEP
 %token PI
 %token PRINT
+%token X_ACCESSOR 
+%token Y_ACCESSOR 
+%token POS_ACCESSOR
+%token COL_ACCESSOR
+%token RED_ACCESSOR
+%token GREEN_ACCESSOR
+%token BLUE_ACCESSOR
 
 %left AND OR
 %left EQ NE LT GT LE GE
@@ -92,10 +99,19 @@ expression:
 | e1 = expression op = binop e2 = expression { Binary_operator(op,e1,e2,Annotation.create $loc) }
 | op = unop e = expression { Unary_operator(op,e,Annotation.create $loc) }
 | op = unop_par L_PAR e = expression R_PAR { Unary_operator(op,e,Annotation.create $loc) }
-//Field eccessor??
+| e = expression a=accessor {Field_accessor(a,e,Annotation.create $loc)}
 | L_SQ_BRK el = expression_list R_SQ_BRK {List(el, Annotation.create $loc)}
 //Cons?
 | L_PAR e = expression R_PAR {e}
+
+accessor:
+| X_ACCESSOR        {X_accessor}
+| Y_ACCESSOR        {Y_accessor}
+| POS_ACCESSOR      {Position_accessor}
+| COL_ACCESSOR      {Color_accessor}
+| RED_ACCESSOR      {Red_accessor}
+| GREEN_ACCESSOR    {Green_accessor}
+| BLUE_ACCESSOR     {Blue_accessor}
 
 types:
 | TYPE_INT {Type_int} 
@@ -106,7 +122,6 @@ types:
 | TYPE_POINT {Type_point}
 
 statement:
-//| BEGIN s = statement_list END {Block(s, Annotation.create $loc)}
 | COPY L_PAR e1 = expression COMMA e2 = expression R_PAR {Assignment(e1, e2, Annotation.create $loc)} // Assignment
 | t = types L_PAR id = ID R_PAR {Variable_declaration(id, t, Annotation.create $loc)} // VarDecl
 | TYPE_LIST L_PAR t = types R_PAR L_PAR id = ID R_PAR {Variable_declaration(id, Type_list(t), Annotation.create $loc)}

@@ -63,6 +63,13 @@ rule token = parse
     | "Print"           { PRINT }
     | "If"              { IF }
     | "Else"            { ELSE }
+    | ".X"              { X_ACCESSOR }
+    | ".Y"              { Y_ACCESSOR }
+    | ".Pos"            { POS_ACCESSOR }
+    | ".Color"          { COL_ACCESSOR }
+    | ".Red"            { RED_ACCESSOR }
+    | ".Green"          { GREEN_ACCESSOR }
+    | ".Blue"           { BLUE_ACCESSOR }
     | "\"" ([^ '\"']* as s) "\""  { STRING(s) }
     | (digit)* "." (digit)* as s {FLOAT(try float_of_string s with Failure _ -> raise (Error(s)) )}
     | (digit)+ as s     { INT(try int_of_string s with Failure _ ->(let pos = Lexing.lexeme_start_p lexbuf in raise (Error(Format.sprintf "Line %d, char %d ,Read: '%s'. It is not a valid integer" pos.pos_lnum (pos.pos_cnum - pos.pos_bol +1) s)) ))}
