@@ -44,6 +44,8 @@
 %token R_CUR_BRK
 %token L_SQ_BRK
 %token R_SQ_BRK
+%token IF
+%token ELSE
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
@@ -62,8 +64,9 @@
 %token STEP
 %token PI
 %token PRINT
+
 %left AND OR
-%left EQ NEQ LT GT LEQ GEQ
+%left EQ NE LT GT LE GE
 %left ADD SUB
 %left MUL DIV MOD
 %nonassoc NOT
@@ -103,13 +106,14 @@ types:
 | TYPE_POINT {Type_point}
 
 statement:
-| BEGIN s = statement_list END {Block(s, Annotation.create $loc)}
+//| BEGIN s = statement_list END {Block(s, Annotation.create $loc)}
 | COPY L_PAR e1 = expression COMMA e2 = expression R_PAR {Assignment(e1, e2, Annotation.create $loc)} // Assignment
 | t = types L_PAR id = ID R_PAR {Variable_declaration(id, t, Annotation.create $loc)} // VarDecl
 | TYPE_LIST L_PAR t = types R_PAR L_PAR id = ID R_PAR {Variable_declaration(id, Type_list(t), Annotation.create $loc)}
 | BEGIN s = statement_list END {Block(s, Annotation.create $loc)} // Block
-//| //IfThenElse
-| FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement SEMICOLON {For(id, init, target, step, body, Annotation.create $loc)}//For
+| IF L_PAR e = expression R_PAR s = statement {IfThenElse(e, s, Nop, Annotation.create $loc)}
+| IF L_PAR e = expression R_PAR s = statement ELSE s2 = statement {IfThenElse(e, s, s2, Annotation.create $loc)}
+//| FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement SEMICOLON {For(id, init, target, step, body, Annotation.create $loc)}//For
 | FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement {For(id, init, target, step, body, Annotation.create $loc)}//For
 | FOREACH id = ID IN e = expression s = statement {Foreach(id, e, s, Annotation.create $loc)} //For each
 | DRAW L_PAR e = expression R_PAR {Draw(e, Annotation.create $loc)} //Draw
@@ -143,10 +147,13 @@ expression_list:
 | DIV   { Div }
 | MOD   { Mod }
 | AND   { And }
-| OR  { Or }
+| OR    { Or }
 | EQ    { Eq }
-| LT   { Lt }
+| NE    { Ne }
+| LT    { Lt }
 | GT    { Gt }
+| LE    { Le }
+| GE    { Ge }
 
 %inline unop:
 | USUB  { USub }
