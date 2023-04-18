@@ -29,10 +29,10 @@
 %token GE
 %token USUB
 %token NOT
-%token Head
 %token TAIL
 %token FLOOR
 %token HEAD
+%token CONCAT
 %token FLOAT_OF_INT
 %token COS
 %token SIN
@@ -78,6 +78,7 @@
 %left AND OR
 %left EQ NE LT GT LE GE
 %left ADD SUB
+%right CONCAT
 %left MUL DIV MOD 
 %nonassoc NOT DOT TAIL USUB
 
@@ -171,14 +172,16 @@ argument:
 | GT    { Gt }
 | LE    { Le }
 | GE    { Ge }
+| CONCAT { Add }
 
 %inline unop:
 | USUB  { USub }
 | NOT  { Not }
-| TAIL  { Tail }
 
 %inline unop_par:
 | FLOOR { Floor }
 | FLOAT_OF_INT { Float_of_int }
 | COS   { Cos }
 | SIN   { Sin }
+| TAIL  { Tail }
+| HEAD  { Head }

@@ -24,6 +24,7 @@ rule token = parse
     | "*"               { MUL }
     | "/"               { DIV }
     | "%"               { MOD }
+    | "::"              { CONCAT }
     | "And"             { AND }
     | "Or"              { OR }
     | "="               { EQ }
