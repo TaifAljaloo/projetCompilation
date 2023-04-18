@@ -73,6 +73,7 @@
 %token BLUE_ACCESSOR
 %token DOT
 
+%nonassoc IF
 %nonassoc ELSE
 %left AND OR
 %left EQ NE LT GT LE GE
