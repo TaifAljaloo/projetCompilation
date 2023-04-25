@@ -82,6 +82,7 @@ let rec simplifier_expr expr =
         | USub -> Constant_i (-i, annotation)
         | Not -> Constant_b (not (i != 0), annotation)
         | Float_of_int -> Constant_f (float_of_int i, annotation)
+        |Floor -> Constant_i (int_of_float (float_of_int i), annotation)
         | _ -> Unary_operator (op, expr', annotation)
       )
       | Constant_f (f,_) ->(
@@ -89,6 +90,7 @@ let rec simplifier_expr expr =
         | USub -> Constant_f (-.f, annotation)
         | Not -> Constant_b (not (f != 0.), annotation)
         | Floor -> Constant_i (int_of_float f, annotation)
+        |Float_of_int -> Constant_f (float_of_int (int_of_float f), annotation)
         | Cos -> Constant_f (cos f, annotation)
         | Sin -> Constant_f (sin f, annotation)
         | _ -> Unary_operator (op, expr', annotation)
