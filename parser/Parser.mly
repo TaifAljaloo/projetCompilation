@@ -148,7 +148,7 @@ statement:
 | IF e = expression s = statement ELSE s2 = statement {IfThenElse(e, s, s2, Annotation.create $loc)}
 | IF e = expression s = statement {IfThenElse(e, s, Nop, Annotation.create $loc)}
 //| FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement SEMICOLON {For(id, init, target, step, body, Annotation.create $loc)}//For
-| FOR id=ID FROM init = expression TO target = expression STEP step = expression body = statement {For(id, init, target, step, body, Annotation.create $loc)}//For
+| FOR name=ID FROM e1=expression TO e2=expression STEP e3=expression body=statement {For(name, e1, e2, e3, body, Annotation.create $loc)}
 | FOREACH id = ID IN e = expression s = statement {Foreach(id, e, s, Annotation.create $loc)} //For each
 | DRAW L_PAR e = expression R_PAR {Draw(e, Annotation.create $loc)} //Draw
 | NOP {Nop} //Nop

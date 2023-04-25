@@ -17,6 +17,8 @@
 open Ast
 open Util
 
+[@@@ocaml.warning "-8"]
+
 let rec simplifier_expr expr =
   match expr with
   | Constant_i (i,annotation) -> Constant_i (i,annotation)
@@ -26,72 +28,85 @@ let rec simplifier_expr expr =
   | Point(x,y,annotation) -> Point(simplifier_expr x, simplifier_expr y, annotation)
   | Color(r,g,b,annotation) -> Color(simplifier_expr r, simplifier_expr g, simplifier_expr b, annotation)
   | Variable (s,annotation) -> Variable (s,annotation)
-  | Binary_operator(op, e1, e2, annotation) ->
-    (let e1=simplifier_expr e1 in
-     let e2=simplifier_expr e2 in
-     match (op,e1,e2) with
-      | (Add, Constant_i (i1,_), Constant_i (i2,_)) -> Constant_i (i1+i2,annotation)
-      | (Add, Constant_f (f1,_), Constant_f (f2,_)) -> Constant_f (f1+.f2,annotation)
-      | (Add, Constant_i (i1,_), Constant_f (f2,_)) -> Constant_f (float_of_int i1+.f2,annotation)
-      | (Add, Constant_f (f1,_), Constant_i (i2,_)) -> Constant_f (f1+.float_of_int i2,annotation)
-      | (Sub, Constant_i (i1,_), Constant_i (i2,_)) -> Constant_i (i1-i2,annotation)
-      | (Sub, Constant_f (f1,_), Constant_f (f2,_)) -> Constant_f (f1-.f2,annotation)
-      | (Sub, Constant_i (i1,_), Constant_f (f2,_)) -> Constant_f (float_of_int i1-.f2,annotation)
-      | (Sub, Constant_f (f1,_), Constant_i (i2,_)) -> Constant_f (f1-.float_of_int i2,annotation)
-      | (Mul, Constant_i (i1,_), Constant_i (i2,_)) -> Constant_i (i1*i2,annotation)
-      | (Mul, Constant_f (f1,_), Constant_f (f2,_)) -> Constant_f (f1*.f2,annotation)
-      | (Mul, Constant_i (i1,_), Constant_f (f2,_)) -> Constant_f (float_of_int i1*.f2,annotation)
-      | (Mul, Constant_f (f1,_), Constant_i (i2,_)) -> Constant_f (f1*.float_of_int i2,annotation)
-      | (Div, Constant_i (i1,_), Constant_i (i2,_)) -> Constant_i (i1/i2,annotation)
-      | (Div, Constant_f (f1,_), Constant_f (f2,_)) -> Constant_f (f1/.f2,annotation)
-      | (Div, Constant_i (i1,_), Constant_f (f2,_)) -> Constant_f (float_of_int i1/.f2,annotation)
-      | (Div, Constant_f (f1,_), Constant_i (i2,_)) -> Constant_f (f1/.float_of_int i2,annotation)
-      | (Mod, Constant_i (i1,_), Constant_i (i2,_)) -> Constant_i (i1 mod i2,annotation)
-      | (Mod, Constant_f (f1,_), Constant_f (f2,_)) -> Constant_f (mod_float f1 f2,annotation)
-      | (Mod, Constant_i (i1,_), Constant_f (f2,_)) -> Constant_f (mod_float (float_of_int i1) f2,annotation)
-      | (Mod, Constant_f (f1,_), Constant_i (i2,_)) -> Constant_f (mod_float f1 (float_of_int i2),annotation)
-      | And , Constant_b (b1,_), Constant_b (b2,_) -> Constant_b (b1 && b2,annotation)
-      | Or , Constant_b (b1,_), Constant_b (b2,_) -> Constant_b (b1 || b2,annotation)
-      | Eq , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 = i2,annotation)
-      | Eq , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 = f2,annotation)
-      | Eq , Constant_b (b1,_), Constant_b (b2,_) -> Constant_b (b1 = b2,annotation)
-      | Ne , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 <> i2,annotation)
-      | Ne , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 <> f2,annotation)
-      | Ne , Constant_b (b1,_), Constant_b (b2,_) -> Constant_b (b1 <> b2,annotation)
-      | Lt , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 < i2,annotation)
-      | Lt , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 < f2,annotation)
-      | Lt , Constant_i (i1,_), Constant_f (f2,_) -> Constant_b (float_of_int i1 < f2,annotation)
-      | Lt , Constant_f (f1,_), Constant_i (i2,_) -> Constant_b (f1 < float_of_int i2,annotation)
-      | Le , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 <= i2,annotation)
-      | Le , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 <= f2,annotation)
-      | Le , Constant_i (i1,_), Constant_f (f2,_) -> Constant_b (float_of_int i1 <= f2,annotation)
-      | Le , Constant_f (f1,_), Constant_i (i2,_) -> Constant_b (f1 <= float_of_int i2,annotation)
-      | Gt , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 > i2,annotation)
-      | Gt , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 > f2,annotation)
-      | Gt , Constant_i (i1,_), Constant_f (f2,_) -> Constant_b (float_of_int i1 > f2,annotation)
-      | Gt , Constant_f (f1,_), Constant_i (i2,_) -> Constant_b (f1 > float_of_int i2,annotation)
-      | Ge , Constant_i (i1,_), Constant_i (i2,_) -> Constant_b (i1 >= i2,annotation)
-      | Ge , Constant_f (f1,_), Constant_f (f2,_) -> Constant_b (f1 >= f2,annotation)
-      | Ge , Constant_i (i1,_), Constant_f (f2,_) -> Constant_b (float_of_int i1 >= f2,annotation)
-      | Ge , Constant_f (f1,_), Constant_i (i2,_) -> Constant_b (f1 >= float_of_int i2,annotation)
-      | _ -> failwith "Not a constant expression")
+  | Binary_operator(op, e1, e2, anno) -> let e1, e2 = simplifier_expr(e1), simplifier_expr(e2) in (
+    match e1, e2 with
+    | Constant_i(i1, _), Constant_i(i2, _) -> (
+      match op with
+      | Add -> Constant_i(i1+i2, anno)
+      | Sub -> Constant_i(i1-i2, anno)
+      | Mul -> Constant_i(i1*i2, anno)
+      | Div -> Constant_i(i1/i2, anno)
+      | Mod -> Constant_i(i1 mod i2, anno)
+      | Eq -> Constant_b(i1 = i2, anno)
+      | Ne -> Constant_b(i1 != i2, anno)
+      | Lt -> Constant_b(i1 < i2, anno)
+      | Gt -> Constant_b(i1 > i2, anno)
+      | Le -> Constant_b(i1 <= i2, anno)
+      | Ge -> Constant_b(i1 >= i2, anno)
+      | _ -> Binary_operator(op, e1, e2, anno)
+    )
+    |Constant_f(f1, _), Constant_f(f2, _) -> (
+        match op with
+        | Add -> Constant_f(f1+.f2, anno)
+        | Sub -> Constant_f(f1-.f2, anno)
+        | Mul -> Constant_f(f1*.f2, anno)
+        | Div -> Constant_f(f1/.f2, anno)
+        | Mod -> Constant_f(mod_float f1 f2, anno)
+        | Eq -> Constant_b(f1 = f2, anno)
+        | Ne -> Constant_b(f1 != f2, anno)
+        | Lt -> Constant_b(f1 < f2, anno)
+        | Gt -> Constant_b(f1 > f2, anno)
+        | Le -> Constant_b(f1 <= f2, anno)
+        | Ge -> Constant_b(f1 >= f2, anno)
+        | _ -> Binary_operator(op, e1, e2, anno)
+    )
+    |Constant_b(b1, _), Constant_b(b2, _) -> (
+        match op with
+        | And -> Constant_b(b1 && b2, anno)
+        | Or -> Constant_b(b1 || b2, anno)
+        | Eq -> Constant_b(b1 = b2, anno)
+        | Ne -> Constant_b(b1 != b2, anno)
+        | Lt -> Constant_b(b1 < b2, anno)
+        | Gt -> Constant_b(b1 > b2, anno)
+        | Le -> Constant_b(b1 <= b2, anno)
+        | Ge -> Constant_b(b1 >= b2, anno)
+        | _ -> Binary_operator(op, e1, e2, anno)
+    )
+    | _ -> Binary_operator(op, e1, e2, anno)
+  )
   | Unary_operator (op, expr, annotation) ->
-    (let expr' = simplifier_expr expr in
-     match op, expr' with
-     | USub, Constant_i (i,_) -> Constant_i (-i,annotation)
-      | USub, Constant_f (f,_) -> Constant_f (-.f,annotation)
-      | Not, Constant_b (b,_) -> Constant_b (not b,annotation)
-      | Cos , Constant_f (f,_) -> Constant_f (cos f,annotation)
-      | Sin , Constant_f (f,_) -> Constant_f (sin f,annotation)
-      | Floor , Constant_f (f,_) -> Constant_i (int_of_float (floor f),annotation)
-      | Float_of_int , Constant_i (i,_) -> Constant_f (float_of_int i,annotation)
-      | Head , List (l,_) -> (match l with
-          | [] -> failwith "Empty list"
-          | h::t -> h)
-      | Tail , List (l,_) -> (match l with
-          | [] -> failwith "Empty list"
-          | h::t -> List (t,annotation))
-      | _ -> failwith "Not a constant expression")
+      let expr' = simplifier_expr expr in(
+      match expr' with
+      | Constant_i (i,_) ->(
+        match op with
+        | USub -> Constant_i (-i, annotation)
+        | Not -> Constant_b (not (i != 0), annotation)
+        | Float_of_int -> Constant_f (float_of_int i, annotation)
+        | _ -> Unary_operator (op, expr', annotation)
+      )
+      | Constant_f (f,_) ->(
+        match op with
+        | USub -> Constant_f (-.f, annotation)
+        | Not -> Constant_b (not (f != 0.), annotation)
+        | Floor -> Constant_i (int_of_float f, annotation)
+        | Cos -> Constant_f (cos f, annotation)
+        | Sin -> Constant_f (sin f, annotation)
+        | _ -> Unary_operator (op, expr', annotation)
+      )
+      | Constant_b (b,_) ->(
+        match op with
+        | Not -> Constant_b (not b, annotation)
+        | _ -> Unary_operator (op, expr', annotation)
+      )
+      | List (expr_list, _) ->(
+        match op with
+        | Head -> List.hd expr_list
+        | Tail -> List (List.tl expr_list, annotation)
+        | _ -> Unary_operator (op, expr', annotation)
+      )
+      | _ -> Unary_operator (op, expr', annotation)
+      )
+
       (*ajouter field accessor*)
       | List (expr_list, annotation) -> List (List.map simplifier_expr expr_list, annotation)
       | Cons(expr1, expr2, annotation) -> Cons(simplifier_expr expr1, simplifier_expr expr2, annotation)
