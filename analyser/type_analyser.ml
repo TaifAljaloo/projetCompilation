@@ -164,6 +164,12 @@ let string_of_expr expr =
 
       | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in list between %s and %s" (string_of_expr et) (string_of_expr lt),(Annotation.get_pos a));None)
       | None,_,_ -> None)
+| Ternary_operator(e1,e2,e3,a) -> (let et1,et2,et3=type_expression type_environment report e1,type_expression type_environment report e2,type_expression type_environment report e3 in
+                                  match et1,et2,et3 with
+                                  | Some Type_bool,Some t1,Some t2 when(t1=t2)->Annotation.get_type(Annotation.set_type a t1)
+                                  | Some Type_bool,Some _,Some _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in ternary operator between %s and %s" (string_of_expr et2) (string_of_expr et3),(Annotation.get_pos a));None
+                                  | Some Type_bool,_,_ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in ternary operator between %s and %s" (string_of_expr et2) (string_of_expr et3),(Annotation.get_pos a));None
+                                  | _,_,_ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in ternary operator between %s and %s" (string_of_expr et2) (string_of_expr et3),(Annotation.get_pos a));None)
 
   
 

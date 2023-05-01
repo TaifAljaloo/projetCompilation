@@ -95,6 +95,8 @@ type expression =
   | Field_accessor of field_accessor * expression * Annotation.t
   | List of expression list * Annotation.t
   | Cons of expression * expression * Annotation.t
+  | Ternary_operator of expression * expression * expression * Annotation.t
+      (** Ternary operator. [Ternary_operator(cond,then_,else_,annot)] returns [then_] if [cond] is true, [else_] otherwise. [cond] must be of type {!Type_bool}*)
 
 (** The statements of the language. Only non-obvious cases are commented below. Every statement contains an {!Annotation.t}, except {!Nop}*)
 type statement =

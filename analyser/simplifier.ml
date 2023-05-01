@@ -116,6 +116,12 @@ let rec simplifier_expr expr =
   | List (expr_list, annotation) -> List (List.map simplifier_expr expr_list, annotation)
   | Cons(expr1, expr2, annotation) -> Cons(simplifier_expr expr1, simplifier_expr expr2, annotation)
   | Field_accessor (field, expr, annotation) -> Field_accessor (field, simplifier_expr expr, annotation)
+  | Ternary_operator (expr1, expr2, expr3, annotation) ->(let expr1' = simplifier_expr expr1 in
+    match expr1' with
+    | Constant_b(true, _) -> simplifier_expr expr2
+    | Constant_b(false, _) -> simplifier_expr expr3
+    | _ -> Ternary_operator(expr1', simplifier_expr expr2, simplifier_expr expr3, annotation)
+    )
 
 
 let rec simplify_statement statement =

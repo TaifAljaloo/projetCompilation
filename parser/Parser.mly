@@ -73,6 +73,9 @@
 %token TERNARY
 %token COLON
 %token POW
+(*handle Ternary and Colon priority*)
+%left TERNARY
+%left COLON
 
 %nonassoc IF NOT DOT
 %nonassoc ELSE 
@@ -124,6 +127,7 @@ expression:
 | TRUE {Constant_b(true, Annotation.create $loc)}
 | FALSE {Constant_b(false, Annotation.create $loc)}
 | PI { Constant_f(3.141592653589,Annotation.create $loc) }
+| e1 = expression TERNARY e2 = expression COLON e3 = expression {Ternary_operator(e1, e2, e3, Annotation.create $loc)}
 
 
 statement:

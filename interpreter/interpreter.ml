@@ -14,6 +14,7 @@ type value =
   | Point of point
   | List of value ref list
 
+
 let rec pp_value fmt = function
   | Int a -> Format.fprintf fmt "%d" a
   | Float a -> Format.fprintf fmt "%f" a
@@ -29,6 +30,7 @@ let rec pp_value fmt = function
            (fun s v ->
              Format.asprintf "%s%a" (if s = "" then "" else s ^ ",") pp_value !v)
            "" l)
+  
 
 let int_function_of_binop op v1 v2 =
   match op with
@@ -201,6 +203,12 @@ let rec interpret_expression environment = function
       match v2 with
       | List l -> List (ref v1 :: l)
       | _ -> failwith "appending to something else than a list")
+      
+  |Ternary_operator (e1, e2, e3, _) -> (
+      let v1 = interpret_expression environment e1 in
+      match v1 with
+      | Bool b -> if b then interpret_expression environment e2 else interpret_expression environment e3
+      | _ -> failwith "condition not a boolean")
 
 
 

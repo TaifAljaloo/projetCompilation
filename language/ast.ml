@@ -68,6 +68,7 @@ type expression =
   | Field_accessor of field_accessor * expression * Annotation.t
   | List of expression list * Annotation.t
   | Cons of expression * expression * Annotation.t
+  | Ternary_operator of expression * expression * expression * Annotation.t
 
 type statement =
   | Assignment of expression * expression * Annotation.t
@@ -154,6 +155,9 @@ let rec string_of_expression = function
   | List (l, _) -> "[" ^ string_of_list l ^ "]"
   | Cons (elt, value, _) ->
       string_of_expression elt ^ "::" ^ string_of_expression value
+  | Ternary_operator (cond, e1, e2, _) ->
+      string_of_expression cond ^ " ? " ^ string_of_expression e1 ^ " : "
+      ^ string_of_expression e2
 
 and string_of_pos = function
   | x, y ->
