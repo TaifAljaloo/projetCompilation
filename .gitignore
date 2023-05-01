@@ -9,6 +9,10 @@
 *.cmxa
 *.out
 *.exe
+*.automaton
+*.conflicts
+*.dot
+*.html
 
 # ocamlbuild working directory
 _build/
