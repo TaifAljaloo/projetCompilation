@@ -134,7 +134,7 @@ let rec type_expression type_environment report expression =
       match (texpr1, texpr2) with
       | Some Type_int, Some Type_int -> (
           match op with
-          | Add | Sub | Mul | Div | Mod | Pow ->
+          | Add | Sub | Mul | Div | Mod  ->
               Annotation.get_type (Annotation.set_type anno Type_int)
           | Eq | Ne | Lt | Le | Gt | Ge ->
               Annotation.get_type (Annotation.set_type anno Type_bool)
@@ -147,7 +147,7 @@ let rec type_expression type_environment report expression =
               None)
       | Some Type_float, Some Type_float -> (
           match op with
-          | Add | Sub | Mul | Div | Mod | Pow ->
+          | Add | Sub | Mul | Div | Mod  ->
               Annotation.get_type (Annotation.set_type anno Type_float)
           | Eq | Ne | Lt | Le | Gt | Ge ->
               Annotation.get_type (Annotation.set_type anno Type_bool)
@@ -209,7 +209,7 @@ let rec type_expression type_environment report expression =
               None)
       | Some Type_int, Some Type_float -> (
           match op with
-          | Add | Sub | Mul | Div | Mod | Pow ->
+          | Add | Sub | Mul | Div | Mod ->
               Annotation.get_type (Annotation.set_type anno Type_float)
           | Eq | Ne | Lt | Le | Gt | Ge ->
               Annotation.get_type (Annotation.set_type anno Type_bool)
@@ -222,7 +222,7 @@ let rec type_expression type_environment report expression =
               None)
       | Some Type_float, Some Type_int -> (
           match op with
-          | Add | Sub | Mul | Div | Mod | Pow ->
+          | Add | Sub | Mul | Div | Mod  ->
               Annotation.get_type (Annotation.set_type anno Type_float)
           | Eq | Ne | Lt | Le | Gt | Ge ->
               Annotation.get_type (Annotation.set_type anno Type_bool)
@@ -452,36 +452,6 @@ let rec type_expression type_environment report expression =
                   Annotation.get_pos a );
               None)
       | None, _, _ -> None)
-  | Ternary_operator (e1, e2, e3, a) -> (
-      let et1, et2, et3 =
-        ( type_expression type_environment report e1,
-          type_expression type_environment report e2,
-          type_expression type_environment report e3 )
-      in
-      match (et1, et2, et3) with
-      | Some Type_bool, Some t1, Some t2 when t1 = t2 ->
-          Annotation.get_type (Annotation.set_type a t1)
-      | Some Type_bool, Some _, Some _ ->
-          Error_report.add_error report
-            ( Format.sprintf
-                "Error: type mismatch in ternary operator between %s and %s"
-                (string_of_expr et2) (string_of_expr et3),
-              Annotation.get_pos a );
-          None
-      | Some Type_bool, _, _ ->
-          Error_report.add_error report
-            ( Format.sprintf
-                "Error: type mismatch in ternary operator between %s and %s"
-                (string_of_expr et2) (string_of_expr et3),
-              Annotation.get_pos a );
-          None
-      | _, _, _ ->
-          Error_report.add_error report
-            ( Format.sprintf
-                "Error: type mismatch in ternary operator between %s and %s"
-                (string_of_expr et2) (string_of_expr et3),
-              Annotation.get_pos a );
-          None)
 
 let rec type_instruction type_environment report instruction =
   match instruction with
@@ -673,32 +643,6 @@ let rec type_instruction type_environment report instruction =
           Error_report.add_error report
             ( "Error in Assigment first argument is not a variable",
               Annotation.get_pos assi_anno ))
-  | While (expr, stat, annotation) -> (
-      let et = type_expression type_environment report expr in
-      match et with
-      | Some Type_bool -> type_instruction type_environment report stat
-      | Some _ ->
-          Error_report.add_error report
-            ( Format.sprintf "Error: type mismatch in while between %s and %s"
-                (string_of_expr et)
-                (Ast.string_of_type_expr Type_bool),
-              Annotation.get_pos annotation );
-          ()
-      | _ -> ())
-  | Init_Variable_declaration (var_name, var_type, var_value, annotation) -> (
-      let variable_value = type_expression type_environment report var_value in
-      match variable_value with
-      | Some vt when var_type = vt ->
-          Environment.add type_environment var_name var_type
-      | Some vt ->
-          Error_report.add_error report
-            ( Format.sprintf "Type %s is invalide for %s variable"
-                (Ast.string_of_type_expr vt)
-                var_name,
-              Annotation.get_pos annotation )
-      | _ ->
-          Error_report.add_error report
-            ("Unable to determine type", Annotation.get_pos annotation))
 
 let type_analyser report program =
   let type_environment = Environment.new_environment () in

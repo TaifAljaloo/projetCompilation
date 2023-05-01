@@ -34,7 +34,6 @@ type binary_operator =
   | Gt
   | Le
   | Ge
-  | Pow
 
 type unary_operator =
   | USub
@@ -68,7 +67,6 @@ type expression =
   | Field_accessor of field_accessor * expression * Annotation.t
   | List of expression list * Annotation.t
   | Cons of expression * expression * Annotation.t
-  | Ternary_operator of expression * expression * expression * Annotation.t
 
 type statement =
   | Assignment of expression * expression * Annotation.t
@@ -81,8 +79,6 @@ type statement =
   | Draw of expression * Annotation.t
   | Nop
   | Print of expression * Annotation.t
-  | While of expression * statement * Annotation.t
-  | Init_Variable_declaration of string * type_expr * expression * Annotation.t
 
 type argument = Argument of string * type_expr * Annotation.t
 type program = Program of argument list * statement
@@ -110,7 +106,6 @@ let string_of_binary_operator = function
   | Gt -> " > "
   | Le -> " <= "
   | Ge -> " >= "
-  | Pow -> "^"
 
 let string_of_unary_operator = function
   | USub -> "-"
@@ -155,10 +150,6 @@ let rec string_of_expression = function
   | List (l, _) -> "[" ^ string_of_list l ^ "]"
   | Cons (elt, value, _) ->
       string_of_expression elt ^ "::" ^ string_of_expression value
-  | Ternary_operator (cond, e1, e2, _) ->
-      string_of_expression cond ^ " ? " ^ string_of_expression e1 ^ " : "
-      ^ string_of_expression e2
-
 and string_of_pos = function
   | x, y ->
       "Pos(" ^ string_of_expression x ^ ", " ^ string_of_expression y ^ ")"
@@ -208,15 +199,6 @@ let rec pp_statement fmt = function
   | Nop -> ()
   | Print (expression, _) ->
       Format.fprintf fmt "Print %s" (string_of_expression expression)
-  | While (expression, statement, _) ->
-      Format.fprintf fmt "@[<v 2>While (%s)@,%a@]"
-        (string_of_expression expression)
-        pp_statement statement
-  | Init_Variable_declaration (name, type_expr, expression, _) ->
-      Format.fprintf fmt "%s(%s) = %s"
-        (string_of_type_expr type_expr)
-        name
-        (string_of_expression expression)
 
 and pp_list_statements fmt = function
   | [] -> ()

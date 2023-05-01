@@ -222,10 +222,6 @@ let rec simplifier_expr expr =
           Constant_b (float_of_int i1 <= f2, anno)
       | Le, Constant_f (f1, _), Constant_i (i2, _) ->
           Constant_b (f1 <= float_of_int i2, anno)
-      | Pow, Constant_i (i1, _), Constant_i (i2, _) ->
-          Constant_i (int_of_float (float_of_int i1 ** float_of_int i2), anno)
-      | Pow, Constant_f (f1, _), Constant_f (f2, _) ->
-          Constant_f (f1 ** f2, anno)
       | _ -> Binary_operator (op, e1, e2, anno))
   | Unary_operator (op, expr, annotation) -> (
       let expr' = simplifier_expr expr in
@@ -246,14 +242,6 @@ let rec simplifier_expr expr =
       Cons (simplifier_expr expr1, simplifier_expr expr2, annotation)
   | Field_accessor (field, expr, annotation) ->
       Field_accessor (field, simplifier_expr expr, annotation)
-  | Ternary_operator (expr1, expr2, expr3, annotation) -> (
-      let expr1' = simplifier_expr expr1 in
-      match expr1' with
-      | Constant_b (true, _) -> simplifier_expr expr2
-      | Constant_b (false, _) -> simplifier_expr expr3
-      | _ ->
-          Ternary_operator
-            (expr1', simplifier_expr expr2, simplifier_expr expr3, annotation))
 
 let rec simplify_statement statement =
   match statement with
@@ -288,15 +276,6 @@ let rec simplify_statement statement =
   | Draw (expr, annotation) -> Draw (simplifier_expr expr, annotation)
   | Nop -> Nop
   | Print (expr, annotation) -> Print (simplifier_expr expr, annotation)
-  | While (expr, statement, annotation) -> (
-      let expr', statement' =
-        (simplifier_expr expr, simplify_statement statement)
-      in
-      match expr' with
-      | Constant_b (true, _) -> While (expr', statement', annotation)
-      | Constant_b (false, _) -> Nop
-      | _ -> While (expr', statement', annotation))
-  | _ -> statement
 
 let simplifier program =
   match program with

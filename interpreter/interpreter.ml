@@ -43,7 +43,6 @@ let int_function_of_binop op v1 v2 =
   | Gt -> Bool (v1 > v2)
   | Le -> Bool (v1 <= v2)
   | Ge -> Bool (v1 >= v2)
-  | Pow -> Int (float_of_int v1 ** float_of_int v2 |> int_of_float)
   | And | Or -> failwith "Operation undefined on integers"
 
 let float_function_of_binop op v1 v2 =
@@ -59,12 +58,11 @@ let float_function_of_binop op v1 v2 =
   | Gt -> Bool (v1 > v2)
   | Le -> Bool (v1 <= v2)
   | Ge -> Bool (v1 >= v2)
-  | Pow -> Float (v1 ** v2)
   | And | Or -> failwith "Operation undefined on floats"
 
 let bool_function_of_binop op v1 v2 =
   match op with
-  | Add | Sub | Mul | Div | Mod | Pow ->
+  | Add | Sub | Mul | Div | Mod ->
       failwith "Operation undefined on booleans"
   | Eq -> Bool (v1 = v2)
   | Ne -> Bool (v1 <> v2)
@@ -95,7 +93,7 @@ let pos_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.x = v2.x && v1.y = v2.y)
   | Ne -> Bool (v1.x <> v2.x || v1.y <> v2.y)
-  | Gt | Lt | Le | Ge | And | Or | Pow ->
+  | Gt | Lt | Le | Ge | And | Or  ->
       failwith "operation undefined on position"
 
 let color_function_of_binop op v1 v2 =
@@ -109,7 +107,7 @@ let color_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.red = v2.red && v1.blue = v2.blue && v1.green = v2.green)
   | Ne -> Bool (v1.red <> v2.red || v1.blue <> v2.blue || v1.green <> v2.green)
-  | Gt | Lt | Le | Ge | And | Or | Pow ->
+  | Gt | Lt | Le | Ge | And | Or ->
       failwith "operation undefined on color"
 
 let point_function_of_binop op v1 v2 =
@@ -122,7 +120,7 @@ let point_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.pos = v2.pos)
   | Ne -> Bool (v1.pos <> v2.pos)
-  | Gt | Lt | Le | Ge | And | Or | Pow ->
+  | Gt | Lt | Le | Ge | And | Or ->
       failwith "operation undefined on position"
 
 let list_function_of_binop op l1 l2 =
@@ -203,13 +201,6 @@ let rec interpret_expression environment = function
       match v2 with
       | List l -> List (ref v1 :: l)
       | _ -> failwith "appending to something else than a list")
-  | Ternary_operator (e1, e2, e3, _) -> (
-      let v1 = interpret_expression environment e1 in
-      match v1 with
-      | Bool b ->
-          if b then interpret_expression environment e2
-          else interpret_expression environment e3
-      | _ -> failwith "condition not a boolean")
 
 let rec interpret_statement environment = function
   | Assignment (e1, e2, _) -> (
@@ -315,15 +306,6 @@ let rec interpret_statement environment = function
   | Print (expression, _) ->
       Format.printf "%a@,%!" pp_value
         (interpret_expression environment expression)
-  | While (test, body, _) ->
-      while interpret_expression environment test = Bool true do
-        interpret_statement environment body
-      done
-  | Init_Variable_declaration (name, t, value, annotation) ->
-      interpret_statement environment
-        (Variable_declaration (name, t, annotation));
-      interpret_statement environment
-        (Assignment (Variable (name, annotation), value, annotation))
 
 let rec parse_arg str = function
   | Type_int -> Int (int_of_string str)

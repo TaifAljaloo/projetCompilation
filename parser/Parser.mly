@@ -69,17 +69,10 @@
 %token CONS
 %token TRUE
 %token FALSE
-%token WHILE
-%token TERNARY
-%token COLON
-%token POW
-(*handle Ternary and Colon priority*)
-%left TERNARY
-%left COLON
 
 %nonassoc IF NOT DOT
 %nonassoc ELSE 
-%left AND OR EQ NE LT GT LE GE ADD SUB POW MUL DIV MOD 
+%left AND OR EQ NE LT GT LE GE ADD SUB MUL DIV MOD 
 %right CONCAT
 
 
@@ -127,14 +120,12 @@ expression:
 | TRUE {Constant_b(true, Annotation.create $loc)}
 | FALSE {Constant_b(false, Annotation.create $loc)}
 | PI { Constant_f(3.141592653589,Annotation.create $loc) }
-| e1 = expression TERNARY e2 = expression COLON e3 = expression {Ternary_operator(e1, e2, e3, Annotation.create $loc)}
 
 
 statement:
 | COPY L_PAR e1 = expression COMMA e2 = expression R_PAR {Assignment(e1, e2, Annotation.create $loc)} 
 | t = types L_PAR id = ID R_PAR {Variable_declaration(id, t, Annotation.create $loc)}
 | TYPE_LIST L_PAR t = types R_PAR L_PAR id = ID R_PAR {Variable_declaration(id, Type_list(t), Annotation.create $loc)}
-| t = types L_PAR id = ID COMMA value = expression R_PAR {Init_Variable_declaration(id, t, value, Annotation.create $loc)}
 | BEGIN s = statement_list END {Block(s, Annotation.create $loc)} 
 | IF e = expression s = statement ELSE s2 = statement {IfThenElse(e, s, s2, Annotation.create $loc)}
 | IF e = expression s = statement {IfThenElse(e, s, Nop, Annotation.create $loc)}
@@ -143,7 +134,6 @@ statement:
 | DRAW L_PAR e = expression R_PAR {Draw(e, Annotation.create $loc)} 
 | NOP {Nop} //Nop
 | PRINT L_PAR e = expression R_PAR {Print(e, Annotation.create $loc)} 
-| WHILE e = expression s = statement {While(e, s, Annotation.create $loc)}
 
 argument:
 | t = types L_PAR name = ID R_PAR {Argument(name, t,Annotation.create $loc)}
@@ -163,7 +153,6 @@ argument:
 | GT    { Gt }
 | LE    { Le }
 | GE    { Ge }
-| POW { Pow }
 
 %inline unop:
 | SUB  { USub }
