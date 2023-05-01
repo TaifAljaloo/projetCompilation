@@ -1,0 +1,17 @@
+Begin
+    // définitions
+    Int(k);
+    While (k < 10) 
+    Begin
+        Print(k);
+        Copy(k, k+1)
+    End;
+    Begin
+        Int(k);
+        While (k < 10) 
+        Begin
+            Print(k);
+            Copy(k, k+1)
+        End
+    End
+End

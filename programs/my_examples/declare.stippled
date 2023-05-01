@@ -1,0 +1,7 @@
+Begin
+    Int(x,3);
+    Print(x);
+    Int(y);
+    Copy(y,x);
+    Print(y)
+End

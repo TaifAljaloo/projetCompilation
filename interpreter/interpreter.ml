@@ -72,6 +72,8 @@ let bool_function_of_binop op v1 v2 =
   | And -> Bool (v1 && v2)
   | Or -> Bool (v1 || v2)
 
+
+
 let get_int = function Int i -> i | _ -> failwith "error not producing an int"
 
 let get_pos = function
@@ -156,6 +158,8 @@ let rec interpret_expression environment = function
       let v2 = interpret_expression environment e2 in
       match (v1, v2) with
       | Int i1, Int i2 -> int_function_of_binop op i1 i2
+      | Int i1, Float f2 -> float_function_of_binop op (float i1) f2
+      | Float f1, Int i2 -> float_function_of_binop op f1 (float i2)
       | Float f1, Float f2 -> float_function_of_binop op f1 f2
       | Bool b1, Bool b2 -> bool_function_of_binop op b1 b2
       | Pos p1, Pos p2 -> pos_function_of_binop op p1 p2
@@ -195,6 +199,8 @@ let rec interpret_expression environment = function
       match v2 with
       | List l -> List (ref v1 :: l)
       | _ -> failwith "appending to something else than a list")
+
+
 
 let rec interpret_statement environment = function
   | Assignment (e1, e2, _) -> (
@@ -300,6 +306,16 @@ let rec interpret_statement environment = function
   | Print (expression, _) ->
       Format.printf "%a@,%!" pp_value
         (interpret_expression environment expression)
+  | While (test, body, _) ->(
+      while
+        interpret_expression environment test = Bool true
+      do
+        interpret_statement environment body
+      done)
+  | Init_Variable_declaration(name,t,value,annotation) -> (interpret_statement environment (Variable_declaration(name,t,annotation)));
+    (interpret_statement environment (Assignment(Variable(name,annotation),value,annotation)))
+
+
 
 let rec parse_arg str = function
   | Type_int -> Int (int_of_string str)

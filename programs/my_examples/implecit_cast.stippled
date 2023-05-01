@@ -1,0 +1,9 @@
+Begin
+    // définitions
+    Int(k);
+    Float(x);
+    Copy(k,100);
+    Copy(x,5.0);
+    // instructions
+    Print(x+k)
+End

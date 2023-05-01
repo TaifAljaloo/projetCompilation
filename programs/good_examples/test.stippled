@@ -1,0 +1,10 @@
+Begin
+    Int(x);
+    Int(y);
+    Copy(x, 20);
+    Copy(y, 20);
+    Draw(Point(Pos(20+20,20), Color(0, 0, 0)));
+    Draw(Point(Pos(100+x,20-y), Color(0, 0, 0)));
+    Draw(Point(Pos(20,x+y), Color(0, 0, 0)));
+    Draw(Point(Pos(100,100), Color(0, 0, 0)))
+End

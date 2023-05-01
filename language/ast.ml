@@ -79,6 +79,8 @@ type statement =
   | Draw of expression * Annotation.t
   | Nop
   | Print of expression * Annotation.t
+  | While of expression * statement * Annotation.t
+  | Init_Variable_declaration of string * type_expr * expression * Annotation.t
 
 type argument = Argument of string * type_expr * Annotation.t
 type program = Program of argument list * statement
@@ -116,7 +118,6 @@ let string_of_unary_operator = function
   | Float_of_int -> "Float_of_int"
   | Cos -> "Cos"
   | Sin -> "Sin"
-
 let string_of_field_accessor = function
   | Color_accessor -> "Color"
   | Position_accessor -> "Position"
@@ -200,6 +201,13 @@ let rec pp_statement fmt = function
   | Nop -> ()
   | Print (expression, _) ->
       Format.fprintf fmt "Print %s" (string_of_expression expression)
+  | While (expression, statement, _) ->
+      Format.fprintf fmt "@[<v 2>While (%s)@,%a@]" (string_of_expression expression)
+        pp_statement statement
+  | Init_Variable_declaration (name, type_expr, expression, _) ->
+      Format.fprintf fmt "%s(%s) = %s" (string_of_type_expr type_expr) name
+        (string_of_expression expression)
+
 
 and pp_list_statements fmt = function
   | [] -> ()

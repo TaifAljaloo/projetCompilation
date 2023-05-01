@@ -15,10 +15,10 @@ rule token = parse
     | "Int"             { TYPE_INT }
     | "Float"           { TYPE_FLOAT }
     | "Bool"            { TYPE_BOOL }
-    | "Pos"             { TYPE_POS }
-    | "Color"           { TYPE_COLOR }
+    | "Pos"             { POS }
     | "Point"           { TYPE_POINT }
     | "List"            { TYPE_LIST }
+    | "Color"           { COLOR }
     | "+"               { ADD }
     | "-"               { SUB }
     | "*"               { MUL }
@@ -33,7 +33,6 @@ rule token = parse
     | ">"               { GT }
     | "<="              { LE }
     | ">="              { GE }
-    | "-"               { USUB }
     | "Not"             { NOT }
     | "Head"            { HEAD }
     | "Tail"            { TAIL }
@@ -45,8 +44,6 @@ rule token = parse
     | ","               { COMMA }
     | "("               { L_PAR }
     | ")"               { R_PAR }
-    | "{"               { L_CUR_BRK }
-    | "}"               { R_CUR_BRK }
     | "["               { L_SQ_BRK }
     | "]"               { R_SQ_BRK }
     | "Begin"           { BEGIN }
@@ -62,17 +59,20 @@ rule token = parse
     | "Step"            { STEP }
     | "Pi"              { PI }
     | "Print"           { PRINT }
+    | "Cons"            { CONS }
+    | "True"            { TRUE }
+    | "False"           { FALSE }
     | "If"              { IF }
     | "Else"            { ELSE }
     | "X"               { X_ACCESSOR }
     | "Y"               { Y_ACCESSOR }
-    | "Pos"             { POS_ACCESSOR }
-    | "Color"           { COL_ACCESSOR }
     | "Red"             { RED_ACCESSOR }
     | "Green"           { GREEN_ACCESSOR }
     | "Blue"            { BLUE_ACCESSOR }
     | "."               { DOT }
-    | "\"" ([^ '\"']* as s) "\""  { STRING(s) }
+    | "While"           { WHILE }
+    | "?"               {TERNARY}
+    | ":"              {COLON}  
     | (digit)* "." (digit)* as s {FLOAT(try float_of_string s with Failure _ -> raise (Error(s)) )}
     | (digit)+ as s     { INT(try int_of_string s with Failure _ ->(let pos = Lexing.lexeme_start_p lexbuf in raise (Error(Format.sprintf "Line %d, char %d ,Read: '%s'. It is not a valid integer" pos.pos_lnum (pos.pos_cnum - pos.pos_bol +1) s)) ))}
     | eof               { EOF }

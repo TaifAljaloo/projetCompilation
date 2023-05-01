@@ -1,0 +1,6 @@
+Begin
+    Int(x,50);
+    Int(y,40);
+    ?(x<y:Print(y):Print(x));
+    Print(x);
+End
