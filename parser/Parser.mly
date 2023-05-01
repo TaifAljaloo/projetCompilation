@@ -74,15 +74,10 @@
 %token COLON
 %token POW
 
-%nonassoc IF
-%nonassoc ELSE
-%left AND OR 
-%left EQ NE LT GT LE GE
-%left ADD SUB
-%left POW
+%nonassoc IF NOT DOT
+%nonassoc ELSE 
+%left AND OR EQ NE LT GT LE GE ADD SUB POW MUL DIV MOD 
 %right CONCAT
-%left MUL DIV MOD 
-%nonassoc NOT DOT
 
 
 %start <program> main
