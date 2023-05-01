@@ -63,11 +63,11 @@ let string_of_expr expr =
     | Binary_operator(op,expr1,expr2,anno) -> (let texpr1,texpr2 = type_expression type_environment report expr1, type_expression type_environment report expr2 in
       match texpr1,texpr2 with
       | Some Type_int, Some Type_int -> (match op with
-                                        | Add | Sub | Mul | Div | Mod -> Annotation.get_type(Annotation.set_type anno Type_int)
+                                        | Add | Sub | Mul | Div | Mod | Pow -> Annotation.get_type(Annotation.set_type anno Type_int)
                                         | Eq| Ne | Lt | Le | Gt | Ge -> Annotation.get_type(Annotation.set_type anno Type_bool)
                                         | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in binary operator between %s and %s" (string_of_expr texpr1) (string_of_expr texpr2),(Annotation.get_pos anno));None)
       | Some Type_float, Some Type_float -> (match op with
-                                        | Add | Sub | Mul | Div | Mod -> Annotation.get_type(Annotation.set_type anno Type_float)
+                                        | Add | Sub | Mul | Div | Mod |Pow  -> Annotation.get_type(Annotation.set_type anno Type_float)
                                         | Eq| Ne | Lt | Le | Gt | Ge -> Annotation.get_type(Annotation.set_type anno Type_bool)
                                         | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in binary operator between %s and %s" (string_of_expr texpr1) (string_of_expr texpr2),(Annotation.get_pos anno));None)
       | Some Type_bool, Some Type_bool -> (match op with
@@ -86,11 +86,11 @@ let string_of_expr expr =
                                         | Eq| Ne | Lt | Le | Gt | Ge -> Annotation.get_type(Annotation.set_type anno Type_bool)
                                         | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in binary operator between %s and %s" (string_of_expr texpr1) (string_of_expr texpr2),(Annotation.get_pos anno));None)
       | Some Type_int ,Some Type_float -> (match op with
-                                        | Add | Sub | Mul | Div | Mod -> Annotation.get_type(Annotation.set_type anno Type_float)
+                                        | Add | Sub | Mul | Div | Mod |Pow -> Annotation.get_type(Annotation.set_type anno Type_float)
                                         | Eq| Ne | Lt | Le | Gt | Ge -> Annotation.get_type(Annotation.set_type anno Type_bool)
                                         | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in binary operator between %s and %s" (string_of_expr texpr1) (string_of_expr texpr2),(Annotation.get_pos anno));None)
       | Some Type_float, Some Type_int -> (match op with
-                                        | Add | Sub | Mul | Div | Mod -> Annotation.get_type(Annotation.set_type anno Type_float)
+                                        | Add | Sub | Mul | Div | Mod | Pow -> Annotation.get_type(Annotation.set_type anno Type_float)
                                         | Eq| Ne | Lt | Le | Gt | Ge -> Annotation.get_type(Annotation.set_type anno Type_bool)
                                         | _ -> Error_report.add_error report (Format.sprintf "Error: type mismatch in binary operator between %s and %s" (string_of_expr texpr1) (string_of_expr texpr2),(Annotation.get_pos anno));None)
       | Some Type_point, Some Type_point -> (match op with

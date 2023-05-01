@@ -43,6 +43,7 @@ let int_function_of_binop op v1 v2 =
   | Gt -> Bool (v1 > v2)
   | Le -> Bool (v1 <= v2)
   | Ge -> Bool (v1 >= v2)
+  | Pow -> Int (float_of_int v1 ** float_of_int v2 |> int_of_float)
   | And | Or -> failwith "Operation undefined on integers"
 
 let float_function_of_binop op v1 v2 =
@@ -58,11 +59,12 @@ let float_function_of_binop op v1 v2 =
   | Gt -> Bool (v1 > v2)
   | Le -> Bool (v1 <= v2)
   | Ge -> Bool (v1 >= v2)
+  | Pow -> Float (v1 ** v2)
   | And | Or -> failwith "Operation undefined on floats"
 
 let bool_function_of_binop op v1 v2 =
   match op with
-  | Add | Sub | Mul | Div | Mod -> failwith "Operation undefined on booleans"
+  | Add | Sub | Mul | Div | Mod | Pow -> failwith "Operation undefined on booleans"
   | Eq -> Bool (v1 = v2)
   | Ne -> Bool (v1 <> v2)
   | Lt -> Bool (v1 < v2)
@@ -94,7 +96,7 @@ let pos_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.x = v2.x && v1.y = v2.y)
   | Ne -> Bool (v1.x <> v2.x || v1.y <> v2.y)
-  | Gt | Lt | Le | Ge | And | Or -> failwith "operation undefined on position"
+  | Gt | Lt | Le | Ge | And | Or | Pow -> failwith "operation undefined on position"
 
 let color_function_of_binop op v1 v2 =
   match op with
@@ -107,7 +109,7 @@ let color_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.red = v2.red && v1.blue = v2.blue && v1.green = v2.green)
   | Ne -> Bool (v1.red <> v2.red || v1.blue <> v2.blue || v1.green <> v2.green)
-  | Gt | Lt | Le | Ge | And | Or -> failwith "operation undefined on color"
+  | Gt | Lt | Le | Ge | And | Or | Pow -> failwith "operation undefined on color"
 
 let point_function_of_binop op v1 v2 =
   match op with
@@ -119,7 +121,7 @@ let point_function_of_binop op v1 v2 =
         }
   | Eq -> Bool (v1.pos = v2.pos)
   | Ne -> Bool (v1.pos <> v2.pos)
-  | Gt | Lt | Le | Ge | And | Or -> failwith "operation undefined on position"
+  | Gt | Lt | Le | Ge | And | Or |Pow  -> failwith "operation undefined on position"
 
 let list_function_of_binop op l1 l2 =
   match op with

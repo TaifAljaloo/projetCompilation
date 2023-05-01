@@ -1,0 +1,5 @@
+Begin
+    Int(x,3);
+    Copy(x,x^3);
+    Print(x)
+End

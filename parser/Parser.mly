@@ -72,12 +72,14 @@
 %token WHILE
 %token TERNARY
 %token COLON
+%token POW
 
 %nonassoc IF
 %nonassoc ELSE
 %left AND OR 
 %left EQ NE LT GT LE GE
 %left ADD SUB
+%left POW
 %right CONCAT
 %left MUL DIV MOD 
 %nonassoc NOT DOT
@@ -162,10 +164,12 @@ argument:
 | GT    { Gt }
 | LE    { Le }
 | GE    { Ge }
+| POW { Pow }
 
 %inline unop:
 | SUB  { USub }
 | NOT  { Not }
+
 
 %inline unop_par:
 | FLOOR { Floor }

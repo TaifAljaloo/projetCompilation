@@ -52,6 +52,7 @@ type binary_operator =
   | Gt  (** > (over {!Type_int}, {!Type_float} and {!Type_bool})*)
   | Le  (** <= (over {!Type_int}, {!Type_float} and {!Type_bool})*)
   | Ge  (** >= (over {!Type_int}, {!Type_float} and {!Type_bool})*)
+  | Pow (** Power (over {!Type_int} and {!Type_float})*)
 
 
 (** Unary operator over the language*)
@@ -65,6 +66,7 @@ type unary_operator =
       (** The {!Type_float} corresponding to the {!Type_int} given *)
   | Cos  (** Cosinus function over {!Type_float}*)
   | Sin  (** Sinus function over {!Type_float}*)
+
 
 (** Accessors to field of {!Type_point}, {!Type_pos} and {!Type_color}*)
 type field_accessor =

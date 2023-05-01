@@ -34,6 +34,7 @@ type binary_operator =
   | Gt
   | Le
   | Ge
+  | Pow
 
 type unary_operator =
   | USub
@@ -108,6 +109,7 @@ let string_of_binary_operator = function
   | Gt -> " > "
   | Le -> " <= "
   | Ge -> " >= "
+  | Pow -> "^"
 
 let string_of_unary_operator = function
   | USub -> "-"
@@ -118,6 +120,7 @@ let string_of_unary_operator = function
   | Float_of_int -> "Float_of_int"
   | Cos -> "Cos"
   | Sin -> "Sin"
+
 let string_of_field_accessor = function
   | Color_accessor -> "Color"
   | Position_accessor -> "Position"

@@ -96,6 +96,8 @@ let rec simplifier_expr expr =
     | Le, Constant_f(f1, _), Constant_f(f2, _) -> Constant_b(f1 <= f2, anno)
     | Le, Constant_i(i1, _), Constant_f(f2, _) -> Constant_b(float_of_int i1 <= f2, anno)
     | Le, Constant_f(f1, _), Constant_i(i2, _) -> Constant_b(f1 <= float_of_int i2, anno)
+    | Pow, Constant_i(i1, _), Constant_i(i2, _) -> Constant_i(int_of_float ((float_of_int i1) ** (float_of_int i2)), anno)
+    | Pow, Constant_f(f1, _), Constant_f(f2, _) -> Constant_f(f1 ** f2, anno)
     | _ -> Binary_operator(op, e1, e2, anno)
     )
   | Unary_operator (op, expr, annotation) -> (
