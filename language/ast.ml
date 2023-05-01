@@ -209,12 +209,14 @@ let rec pp_statement fmt = function
   | Print (expression, _) ->
       Format.fprintf fmt "Print %s" (string_of_expression expression)
   | While (expression, statement, _) ->
-      Format.fprintf fmt "@[<v 2>While (%s)@,%a@]" (string_of_expression expression)
+      Format.fprintf fmt "@[<v 2>While (%s)@,%a@]"
+        (string_of_expression expression)
         pp_statement statement
   | Init_Variable_declaration (name, type_expr, expression, _) ->
-      Format.fprintf fmt "%s(%s) = %s" (string_of_type_expr type_expr) name
+      Format.fprintf fmt "%s(%s) = %s"
+        (string_of_type_expr type_expr)
+        name
         (string_of_expression expression)
-
 
 and pp_list_statements fmt = function
   | [] -> ()
